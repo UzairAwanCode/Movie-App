@@ -13,12 +13,15 @@ import {
 } from "react-native-heroicons/outline";
 import { styles } from "../theme";
 import TrendingMovies from "../components/trendingMovies";
+import MovieList from "../components/movieList";
 
 const ios = Platform.OS == "ios";
 
 
 const HomeScreen = () => {
   const [data, setData] = useState([1,2,3,4])
+  const [upComming, setUpComming] = useState([1,2,3,4])
+  const [topRated, setTopRated] = useState([1,2,3,4])
   return ( 
     <View className="flex-1 bg-neutral-800">
       <SafeAreaView className={ios ? "-mb-2" : "mb-3"}>
@@ -38,6 +41,8 @@ const HomeScreen = () => {
         contentContainerStyle={{ paddingBottom: 10 }}
       >
         <TrendingMovies data={data}/>
+        <MovieList title="Upcomming" data={upComming}/>
+        <MovieList title="Top Rated" data={topRated}/>
       </ScrollView>
     </View>
   );
