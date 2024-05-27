@@ -7,3 +7,4 @@
 6. React Native react-native-progress: npm i react-native-progress
 7. React Native Axios: npm i axios
 8. We use api from tmdb website for fetching movies
+9. npm i expo-linear-gradient
