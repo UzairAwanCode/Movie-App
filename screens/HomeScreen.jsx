@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -15,16 +15,30 @@ import { styles } from "../theme";
 import TrendingMovies from "../components/trendingMovies";
 import MovieList from "../components/movieList";
 import { useNavigation } from "@react-navigation/native";
+import Loadng from "../components/loadng";
+import { fetchTrendingMovies } from "../api/moviedb";
 
 const ios = Platform.OS == "ios";
 
-
 const HomeScreen = () => {
-  const navigation = useNavigation()
-  const [data, setData] = useState([1,2,3,4])
-  const [upComming, setUpComming] = useState([1,2,3,4])
-  const [topRated, setTopRated] = useState([1,2,3,4])
-  return ( 
+  const navigation = useNavigation();
+  const [trending, setTrending] = useState([]);
+  const [upComming, setUpComming] = useState([1, 2, 3, 4]);
+  const [topRated, setTopRated] = useState([1, 2, 3, 4]);
+  const [loading, setLoading] = useState(true);
+  useEffect(()=>{
+    getTrendingMovies()
+  },[])
+
+  const getTrendingMovies = async()=>{
+    const data = await fetchTrendingMovies()
+    // console.log('We got the data: ', data);
+    if(data && data.results){
+      setTrending(data.results)
+    }
+    setLoading(false)
+  }
+  return (
     <View className="flex-1 bg-neutral-800">
       <SafeAreaView className={ios ? "-mb-2" : "mb-3"}>
         <View className="flex-row justify-between item-center mx-4">
@@ -32,20 +46,24 @@ const HomeScreen = () => {
           <Text className="text-white text-3xl font-bold">
             <Text style={styles.text}>M</Text>ovies
           </Text>
-          <TouchableOpacity onPress={()=>navigation.navigate('Search')}>
+          <TouchableOpacity onPress={() => navigation.navigate("Search")}>
             <MagnifyingGlassIcon size="30" strokeWidth={2} color="white" />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 10 }}
-      >
-        <TrendingMovies data={data}/>
-        <MovieList title="Upcomming" data={upComming}/>
-        <MovieList title="Top Rated" data={topRated}/>
-      </ScrollView>
+      {loading ? (
+        <Loadng />
+      ) : (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 10 }}
+        >
+          {trending.length>0 && <TrendingMovies data={trending}/>}
+          <MovieList title="Upcomming" data={upComming} />
+          <MovieList title="Top Rated" data={topRated} />
+        </ScrollView>
+      )}
     </View>
   );
 };

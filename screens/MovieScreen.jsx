@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import Cast from "../components/Cast";
 import MovieList from "../components/movieList";
+import Loadng from "../components/loadng";
 
 const { width, height } = Dimensions.get("window");
 const ios = Platform.OS == "ios";
@@ -25,8 +26,12 @@ const MovieScreen = () => {
   const navigation = useNavigation();
   const [isFavourite, toggleFavourite] = useState(false);
   const movieName = "Pirates of the Caribbean: Dead Men Tell No Tales";
-  const [cast, setCast] = useState([1,2,3,4,5])
+  const [cast, setCast] = useState([1, 2, 3, 4, 5]);
   const [similarMovies, setSimilarMovies] = useState([1, 2, 3, 4, 5]);
+  const [loading, setLoading] = useState(true);
+  setTimeout(()=>{
+    setLoading(false)
+  }, 2000)
   return (
     <ScrollView
       contentContainerStyle={{ paddingBottom: 20 }}
@@ -56,19 +61,23 @@ const MovieScreen = () => {
           </TouchableOpacity>
         </SafeAreaView>
 
-        <View>
-          <Image
-            source={require("../assets/images/movie_poster.jpg")}
-            style={{ width, height: height * 0.55 }}
-          />
-          <LinearGradient
-            colors={["transparent", "rgba(23,23,23,0.8)", "rgba(23,23,23,1)"]}
-            style={{ width, height: height * 0.4 }}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            className="absolute bottom-0"
-          />
-        </View>
+        {loading ? (
+          <Loadng />
+        ) : (
+          <View>
+            <Image
+              source={require("../assets/images/movie_poster.jpg")}
+              style={{ width, height: height * 0.55 }}
+            />
+            <LinearGradient
+              colors={["transparent", "rgba(23,23,23,0.8)", "rgba(23,23,23,1)"]}
+              style={{ width, height: height * 0.4 }}
+              start={{ x: 0.5, y: 0 }}
+              end={{ x: 0.5, y: 1 }}
+              className="absolute bottom-0"
+            />
+          </View>
+        )}
       </View>
 
       {/* movie details */}
@@ -92,14 +101,18 @@ const MovieScreen = () => {
           </Text>
         </View>
         {/* description */}
-        <Text className="text-neutral-400 tracking-wider mx-4">To break the curse of Flying Dutchman, Captain Jack Sparrow and Henry Turner embark on a mission to find the Trident of Poseidon. They also try to stop Captain Salazar who intends to rule the seas.</Text>
+        <Text className="text-neutral-400 tracking-wider mx-4">
+          To break the curse of Flying Dutchman, Captain Jack Sparrow and Henry
+          Turner embark on a mission to find the Trident of Poseidon. They also
+          try to stop Captain Salazar who intends to rule the seas.
+        </Text>
       </View>
-      <Cast cast={cast} navigation={navigation}/>
+      <Cast cast={cast} navigation={navigation} />
       <MovieList
-          title="Similar Movies"
-          data={similarMovies}
-          hideSeeAll={true}
-        />
+        title="Similar Movies"
+        data={similarMovies}
+        hideSeeAll={true}
+      />
     </ScrollView>
   );
 };
