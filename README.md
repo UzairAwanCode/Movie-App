@@ -8,3 +8,4 @@
 7. React Native Axios: npm i axios
 8. We use api from tmdb website for fetching movies
 9. npm i expo-linear-gradient
+10. npm i lodash (for debouncing in search text field)

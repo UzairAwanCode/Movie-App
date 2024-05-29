@@ -43,7 +43,6 @@ const TrendingMovies = ({ data }) => {
 export default TrendingMovies;
 
 const MovieCard = ({ item, handleClick }) => {
-  console.log('Trending Movies Poster Path: ', item.poster_path);
   return (
     <TouchableWithoutFeedback onPress={()=>handleClick(item)}>
       <Image

@@ -1,5 +1,5 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import { ChevronLeftIcon } from "react-native-heroicons/outline";
 import { HeartIcon } from "react-native-heroicons/solid";
 import MovieList from "../components/movieList";
 import Loadng from "../components/loadng";
+import { fallbackPersonImage, fetchPersonDetails, fetchPersonMovies, image342 } from "../api/moviedb";
 
 const { width, height } = Dimensions.get("window");
 const ios = Platform.OS == "ios";
@@ -22,12 +23,28 @@ const verticalMargin = ios ? "" : "my-3";
 
 const PersonScreen = () => {
   const navigation = useNavigation();
+  const {params: item} = useRoute()
   const [isFavourite, toggleFavourite] = useState(false);
-  const [personMovies, setpersonMovies] = useState([1, 2, 3, 4]);
-  const [loading, setLoading] = useState(true);
-  setTimeout(()=>{
+  const [personMovies, setpersonMovies] = useState([]);
+  const [person, setPerson] = useState([]);
+  const [loading, setLoading] = useState(false);
+  useEffect(()=>{
+    setLoading(true)
+    getPersonDetails(item.id)
+    getPersonMovies(item.id)
+  },[item])
+
+  const getPersonDetails = async(id)=>{
+    const data = await fetchPersonDetails(id)
+    if(data)  setPerson(data)
     setLoading(false)
-  }, 2000)
+  }
+
+  const getPersonMovies = async(id)=>{
+    const data = await fetchPersonMovies(id)
+    if(data && data.cast)  setpersonMovies(data.cast)
+
+  }
   return (
     <ScrollView className="flex-1 bg-neutral-900">
       {/* back button*/}
@@ -66,7 +83,7 @@ const PersonScreen = () => {
           >
             <View className="align-center overflow-hidden h-70 w-70 rounded-full border-2 border-neutral-500">
               <Image
-                source={require("../assets/images/johnny_depp.jpg")}
+                source={{uri: image342(person?.profile_path) || fallbackPersonImage}}
                 style={{ width: width * 0.74, height: height * 0.36 }}
               />
             </View>
@@ -74,39 +91,36 @@ const PersonScreen = () => {
 
           <View className="mt-6">
             <Text className="text-white text-3xl font-bold text-center">
-              Johnny Depp
+              {person?.name}
             </Text>
             <Text className="text-neutral-500 text-base text-center">
-              Owensboro, Kentucky, United States
+              {person?.place_of_birth}
             </Text>
           </View>
 
           <View className="mx-3 p-4 mt-6 flex-row justify-between items-center bg-neutral-700 rounded-full">
             <View className="border-r-2 border-r-neutral-400 px-2 items-center">
               <Text className="text-white font-semibold">Gender</Text>
-              <Text className="text-neutral-300 text-sm">Male</Text>
+              <Text className="text-neutral-300 text-sm">{person?.gender===1?'Female' : 'Male'}</Text>
             </View>
             <View className="border-r-2 border-r-neutral-400 px-2 items-center">
               <Text className="text-white font-semibold">Birthday</Text>
-              <Text className="text-neutral-300 text-sm">1963-06-09</Text>
+              <Text className="text-neutral-300 text-sm">{person?.birthday}</Text>
             </View>
             <View className="border-r-2 border-r-neutral-400 px-2 items-center">
               <Text className="text-white font-semibold">Known for</Text>
-              <Text className="text-neutral-300 text-sm">Acting</Text>
+              <Text className="text-neutral-300 text-sm">{person?.known_for_department}</Text>
             </View>
             <View className="px-2 items-center">
               <Text className="text-white font-semibold">Popularity</Text>
-              <Text className="text-neutral-300 text-sm">55</Text>
+              <Text className="text-neutral-300 text-sm">{person?.popularity?.toFixed(2)}</Text>
             </View>
           </View>
 
           <View className="my-6 mx-4 space-y-2">
             <Text className="text-white text-lg">Biography</Text>
             <Text className="text-neutral-400 tracking-wide">
-              John Christopher Depp II is an American actor and musician. He is
-              the recipient of multiple accolades, including a Golden Globe
-              Award as well as nominations for three Academy Awards and two
-              BAFTA awards.
+              {person?.biography || "N/A"}
             </Text>
           </View>
 
